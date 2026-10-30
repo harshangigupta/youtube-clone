@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Clone</title>
+
+<style>
+:root {
+  --bg: #0f0f0f;
+  --panel: #181818;
+  --hover: #272727;
+  --text: #f1f1f1;
+  --muted: #aaa;
+  --line: #303030;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  color: inherit;
+}
+
+/* TOP NAVIGATION */
+
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 22px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 205px;
+}
+
+.icon-btn {
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+}
+
+.icon-btn:hover {
+  background: var(--hover);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  font-size: 21px;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+
+.play-logo {
+  width: 31px;
+  height: 22px;
+  background: #ff0033;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: white;
+}
+
+.search-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.search {
+  display: flex;
+  width: min(640px, 100%);
+  height: 42px;
+}
+
+.search input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #303030;
+  border-radius: 22px 0 0 22px;
+  background: #121212;
+  color: white;
+  padding: 0 18px;
+  outline: none;
+}
+
+.search input:focus {
+  border-color: #1c62b9;
+}
+
+.search button {
+  width: 66px;
+  border: 1px solid #303030;
+  border-left: 0;
+  border-radius: 0 22px 22px 0;
+  background: #222;
+  font-size: 20px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #7e57c2;
+  font-weight: bold;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: 235px;
+  padding: 8px 12px 20px;
+  position: fixed;
+  top: 64px;
+  bottom: 0;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.side-link:hover,
+.side-link.active {
+  background: var(--hover);
+}
+
+.side-link .ico {
+  width: 22px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.side-separator {
+  height: 1px;
+  background: var(--line);
+  margin: 12px 0;
+}
+
+.side-heading {
+  font-weight: bold;
+  padding: 10px 14px 5px;
+  font-size: 16px;
+}
+
+/* MAIN CONTENT */
+
+main {
+  margin-left: 235px;
+  width: calc(100% - 235px);
+  min-width: 0;
+}
+
+.chips {
+  position: sticky;
+  top: 64px;
+  z-index: 5;
+  display: flex;
+  gap: 12px;
+  padding: 12px 24px 18px;
+  overflow-x: auto;
+  background: var(--bg);
+  scrollbar-width: none;
+}
+
+.chips button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 13px;
+  white-space: nowrap;
+  background: #272727;
+  font-size: 14px;
+}
+
+.chips button:hover {
+  background: #3a3a3a;
+}
+
+.chips button.selected {
+  color: #111;
+  background: #f1f1f1;
+}
+
+/* VIDEO GRID */
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px 16px;
+  padding: 4px 24px 35px;
+}
+
+.video-card {
+  min-width: 0;
+  cursor: pointer;
+}
+
+.thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #252525;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.video-card:hover .thumbnail img {
+  transform: scale(1.035);
+}
+
+.duration {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.85);
+  font-size: 12px;
+}
+
+.video-info {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.channel-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+.video-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.video-title {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0 0 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.dots {
+  border: 0;
+  background: transparent;
+  align-self: flex-start;
+  font-size: 19px;
+  padding: 0 4px;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  text-align: center;
+  padding: 70px 0;
+}
+
+/* VIDEO PREVIEW */
+
+.player-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.player-modal.open {
+  display: flex;
+}
+
+.player-box {
+  width: min(900px, 100%);
+  background: #181818;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.player-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.player-screen {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  background: #050505;
+  color: #ddd;
+  text-align: center;
+  padding: 24px;
+}
+
+.big-play {
+  width: 68px;
+  height: 48px;
+  background: #ff0033;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 15px;
+  font-size: 24px;
+}
+
+.player-caption {
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1200px) {
+  .video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar {
+    width: 205px;
+  }
+
+  main {
+    margin-left: 205px;
+    width: calc(100% - 205px);
+  }
+
+  .brand-area {
+    min-width: 170px;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    gap: 8px;
+    padding: 0 10px;
+    height: 58px;
+  }
+
+  .brand-area {
+    min-width: auto;
+    gap: 8px;
+  }
+
+  .brand-area .menu {
+    display: none;
+  }
+
+  .logo {
+    font-size: 17px;
+  }
+
+  .play-logo {
+    width: 27px;
+    height: 19px;
+  }
+
+  .top-actions {
+    gap: 2px;
+  }
+
+  .top-actions .hide-mobile {
+    display: none;
+  }
+
+  .sidebar {
+    width: 72px;
+    padding: 8px 5px;
+    top: 58px;
+  }
+
+  .side-link {
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 2px;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .side-link .ico {
+    font-size: 20px;
+  }
+
+  .side-heading,
+  .side-separator,
+  .sidebar .long-label {
+    display: none;
+  }
+
+  main {
+    margin-left: 72px;
+    width: calc(100% - 72px);
+  }
+
+  .chips {
+    top: 58px;
+    padding: 10px 12px 14px;
+    gap: 8px;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr;
+    padding: 2px 12px 24px;
+    gap: 26px;
+  }
+
+  .search button {
+    width: 44px;
+  }
+
+  .search input {
+    padding: 0 12px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 980px) {
+  .video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar {
+    width: 82px;
+    padding: 8px 5px;
+  }
+
+  .side-link {
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 2px;
+    font-size: 10px;
+  }
+
+  .side-heading,
+  .side-separator,
+  .sidebar .long-label {
+    display: none;
+  }
+
+  main {
+    margin-left: 82px;
+    width: calc(100% - 82px);
+  }
+
+  .brand-area {
+    min-width: 160px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="brand-area">
+    <button class="icon-btn menu" id="menuBtn">☰</button>
+
+    <div class="logo">
+      <span class="play-logo">▶</span>
+      <span>YouTube</span>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <form class="search" id="searchForm">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search"
+        aria-label="Search videos"
+      >
+      <button aria-label="Search">⌕</button>
+    </form>
+  </div>
+
+  <div class="top-actions">
+    <button class="icon-btn hide-mobile" id="voiceBtn">🎙</button>
+    <button class="icon-btn hide-mobile">＋</button>
+    <button class="icon-btn">♧</button>
+    <div class="avatar">H</div>
+  </div>
+
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="side-link active" data-nav="Home">
+      <span class="ico">⌂</span><span>Home</span>
+    </div>
+
+    <div class="side-link" data-nav="Shorts">
+      <span class="ico">▣</span><span>Shorts</span>
+    </div>
+
+    <div class="side-link" data-nav="Subscriptions">
+      <span class="ico">▤</span><span class="long-label">Subscriptions</span>
+    </div>
+
+    <div class="side-separator"></div>
+
+    <div class="side-heading">You　›</div>
+
+    <div class="side-link" data-nav="History">
+      <span class="ico">◷</span><span>History</span>
+    </div>
+
+    <div class="side-link" data-nav="Playlists">
+      <span class="ico">▤</span><span class="long-label">Playlists</span>
+    </div>
+
+    <div class="side-link" data-nav="Your videos">
+      <span class="ico">▻</span><span class="long-label">Your videos</span>
+    </div>
+
+    <div class="side-link" data-nav="Watch later">
+      <span class="ico">◴</span><span class="long-label">Watch later</span>
+    </div>
+
+    <div class="side-link" data-nav="Liked videos">
+      <span class="ico">♡</span><span class="long-label">Liked videos</span>
+    </div>
+
+    <div class="side-separator"></div>
+
+    <div class="side-heading">Explore</div>
+
+    <div class="side-link" data-nav="Trending">
+      <span class="ico">♨</span><span>Trending</span>
+    </div>
+
+    <div class="side-link" data-nav="Music">
+      <span class="ico">♫</span><span>Music</span>
+    </div>
+
+    <div class="side-link" data-nav="Gaming">
+      <span class="ico">🎮</span><span>Gaming</span>
+    </div>
+
+    <div class="side-link" data-nav="News">
+      <span class="ico">▣</span><span>News</span>
+    </div>
+
+    <div class="side-link" data-nav="Sports">
+      <span class="ico">⚽</span><span>Sports</span>
+    </div>
+
+  </aside>
+
+  <main>
+
+    <nav class="chips" id="chips">
+
+      <button class="selected" data-category="All">All</button>
+      <button data-category="Music">Music</button>
+      <button data-category="Gaming">Gaming</button>
+      <button data-category="Coding">Coding</button>
+      <button data-category="Live">Live</button>
+      <button data-category="Podcasts">Podcasts</button>
+      <button data-category="Design">Design</button>
+      <button data-category="News">News</button>
+      <button data-category="Recently uploaded">Recently uploaded</button>
+      <button data-category="Watched">Watched</button>
+
+    </nav>
+
+    <section class="video-grid" id="videoGrid"></section>
+
+  </main>
+</div>
+
+<div class="player-modal" id="playerModal" role="dialog" aria-modal="true">
+
+  <div class="player-box">
+
+    <div class="player-head">
+      <strong id="playerTitle">Video preview</strong>
+      <button class="icon-btn" id="closePlayer">✕</button>
+    </div>
+
+    <div class="player-screen">
+      <div>
+        <div class="big-play">▶</div>
+        <p id="playerMessage">This is a demo video preview.</p>
+        <div class="player-caption">
+          Demo interface — connect a video source to play real videos.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+/* VIDEO DATA */
+
+const videos = [
+
+  {
+    title: "Build a Beautiful Portfolio Website in 20 Minutes",
+    channel: "Code with Alex",
+    views: "248K views",
+    age: "2 days ago",
+    duration: "20:14",
+    category: "Coding",
+    img: "photo-1498050108023-c5249f4df085",
+    color: "#4b6cb7",
+    initial: "A"
+  },
+
+  {
+    title: "Lofi Hip Hop Radio - Beats to Relax and Study To",
+    channel: "Chill Station",
+    views: "12M views",
+    age: "Streaming now",
+    duration: "LIVE",
+    category: "Music",
+    img: "photo-1470225620780-dba8ba36b745",
+    color: "#d97757",
+    initial: "C"
+  },
+
+  {
+    title: "I Built a Gaming Setup for Under ₹40,000!",
+    channel: "PixelPlay",
+    views: "1.2M views",
+    age: "1 week ago",
+    duration: "14:08",
+    category: "Gaming",
+    img: "photo-1593305841991-05c297ba4575",
+    color: "#287271",
+    initial: "P"
+  },
+
+  {
+    title: "How the Internet Actually Works",
+    channel: "Tech in Plain English",
+    views: "893K views",
+    age: "5 days ago",
+    duration: "11:32",
+    category: "Coding",
+    img: "photo-1518770660439-4636190af475",
+    color: "#5c6bc0",
+    initial: "T"
+  },
+
+  {
+    title: "A Peaceful Morning in the Mountains",
+    channel: "Wander Frames",
+    views: "3.4M views",
+    age: "3 weeks ago",
+    duration: "08:45",
+    category: "Design",
+    img: "photo-1470770841072-f978cf4d019e",
+    color: "#6d8b74",
+    initial: "W"
+  },
+
+  {
+    title: "The Science of Building Better Habits",
+    channel: "Mindful Minutes",
+    views: "521K views",
+    age: "4 days ago",
+    duration: "18:06",
+    category: "Podcasts",
+    img: "photo-1499209974431-9dddcece7f88",
+    color: "#bb6b52",
+    initial: "M"
+  },
+
+  {
+    title: "Top 10 Games You Should Try This Year",
+    channel: "GameScope",
+    views: "760K views",
+    age: "6 days ago",
+    duration: "16:52",
+    category: "Gaming",
+    img: "photo-1542751371-adc38448a05e",
+    color: "#6a4c93",
+    initial: "G"
+  },
+
+  {
+    title: "Designing a Modern App UI from Scratch",
+    channel: "Design Daily",
+    views: "182K views",
+    age: "1 day ago",
+    duration: "22:31",
+    category: "Design",
+    img: "photo-1558655146-d09347e92766",
+    color: "#d1495b",
+    initial: "D"
+  },
+
+  {
+    title: "World News Today: The Biggest Stories Explained",
+    channel: "Daily Brief",
+    views: "98K views",
+    age: "3 hours ago",
+    duration: "09:18",
+    category: "News",
+    img: "photo-1504711434969-e33886168f5c",
+    color: "#4c566a",
+    initial: "D"
+  },
+
+  {
+    title: "Live Coding: Make a To-Do App with JavaScript",
+    channel: "Dev Live",
+    views: "Watching now",
+    age: "Live",
+    duration: "LIVE",
+    category: "Live",
+    img: "photo-1519389950473-47ba0277781c",
+    color: "#3a86ff",
+    initial: "D"
+  },
+
+  {
+    title: "Acoustic Guitar for a Calm Evening",
+    channel: "Open Chords",
+    views: "2.1M views",
+    age: "2 weeks ago",
+    duration: "31:02",
+    category: "Music",
+    img: "photo-1510915361894-db8b60106cb1",
+    color: "#bc6c25",
+    initial: "O"
+  },
+
+  {
+    title: "How to Stay Focused While Studying",
+    channel: "Study Better",
+    views: "410K views",
+    age: "1 month ago",
+    duration: "12:44",
+    category: "Podcasts",
+    img: "photo-1434030216411-0b793f4b4173",
+    color: "#588157",
+    initial: "S"
+  }
+
+];
+
+/* RENDER VIDEO CARDS */
+
+const grid = document.getElementById("videoGrid");
+const searchInput = document.getElementById("searchInput");
+
+let currentCategory = "All";
+let currentNav = "Home";
+
+/* Randomly selected internet images */
+
+function thumbnailUrl(photo) {
+  return `https://images.unsplash.com/${photo}?auto=format&fit=crop&w=640&h=360&q=80`;
+}
+
+function renderVideos() {
+
+  const query = searchInput.value.trim().toLowerCase();
+
+  let filtered = videos.filter(v => {
+
+    const matchesQuery =
+      `${v.title} ${v.channel} ${v.category}`
+      .toLowerCase()
+      .includes(query);
+
+    const matchesCategory =
+      currentCategory === "All" ||
+      v.category === currentCategory ||
+      (
+        currentCategory === "Recently uploaded" &&
+        ["1 day ago", "2 days ago", "3 hours ago"].includes(v.age)
+      ) ||
+      (
+        currentCategory === "Watched" &&
+        v.title.toLowerCase().includes("habits")
+      );
+
+    const matchesNav =
+      !["Music", "Gaming", "News", "Trending"].includes(currentNav) ||
+      currentNav === v.category ||
+      (currentNav === "Trending" && parseFloat(v.views) > 1);
+
+    return matchesQuery && matchesCategory && matchesNav;
+
+  });
+
+  if (currentNav === "Shorts") {
+    filtered = filtered.filter(v => v.duration !== "LIVE");
+  }
+
+  grid.innerHTML = "";
+
+  if (filtered.length === 0) {
+    grid.innerHTML =
+      `<div class="empty">No videos found. Try another search or category.</div>`;
+    return;
+  }
+
+  filtered.forEach(v => {
+
+    const card = document.createElement("article");
+    card.className = "video-card";
+
+    card.innerHTML = `
+      <div class="thumbnail">
+        <img
+          src="${thumbnailUrl(v.img)}"
+          alt="${v.title}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(v.title)}/640/360';"
+        >
+        <span class="duration">${v.duration}</span>
+      </div>
+
+      <div class="video-info">
+
+        <div class="channel-avatar" style="background:${v.color}">
+          ${v.initial}
+        </div>
+
+        <div class="video-text">
+          <h3 class="video-title">${v.title}</h3>
+          <div class="meta">
+            ${v.channel}<br>
+            ${v.views} · ${v.age}
+          </div>
+        </div>
+
+        <button class="dots" aria-label="More options">⋮</button>
+
+      </div>
+    `;
+
+    card.querySelector(".thumbnail")
+      .addEventListener("click", () => openPlayer(v));
+
+    card.querySelector(".video-title")
+      .addEventListener("click", () => openPlayer(v));
+
+    card.querySelector(".dots")
+      .addEventListener("click", e => {
+        e.stopPropagation();
+        alert("More options for: " + v.title);
+      });
+
+    grid.appendChild(card);
+
+  });
+
+}
+
+/* VIDEO PREVIEW */
+
+function openPlayer(video) {
+
+  document.getElementById("playerTitle").textContent = video.title;
+
+  document.getElementById("playerMessage").textContent =
+    "▶ " + video.title;
+
+  document.getElementById("playerModal").classList.add("open");
+
+}
+
+document.getElementById("closePlayer")
+  .addEventListener("click", () => {
+    document.getElementById("playerModal").classList.remove("open");
+  });
+
+document.getElementById("playerModal")
+  .addEventListener("click", e => {
+    if (e.target.id === "playerModal") {
+      e.currentTarget.classList.remove("open");
+    }
+  });
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.getElementById("playerModal").classList.remove("open");
+  }
+});
+
+/* SEARCH */
+
+document.getElementById("searchForm")
+  .addEventListener("submit", e => {
+    e.preventDefault();
+    renderVideos();
+  });
+
+searchInput.addEventListener("input", renderVideos);
+
+/* CATEGORY FILTERS */
+
+document.getElementById("chips")
+  .addEventListener("click", e => {
+
+    const btn = e.target.closest("button[data-category]");
+
+    if (!btn) return;
+
+    currentCategory = btn.dataset.category;
+
+    document.querySelectorAll(".chips button")
+      .forEach(b => {
+        b.classList.toggle("selected", b === btn);
+      });
+
+    renderVideos();
+
+  });
+
+/* SIDEBAR NAVIGATION */
+
+document.getElementById("sidebar")
+  .addEventListener("click", e => {
+
+    const link = e.target.closest(".side-link");
+
+    if (!link) return;
+
+    document.querySelectorAll(".side-link")
+      .forEach(el => {
+        el.classList.toggle("active", el === link);
+      });
+
+    currentNav = link.dataset.nav;
+
+    currentCategory =
+      ["Music", "Gaming", "News"].includes(currentNav)
+        ? currentNav
+        : "All";
+
+    document.querySelectorAll(".chips button")
+      .forEach(b => {
+        b.classList.toggle(
+          "selected",
+          b.dataset.category === currentCategory
+        );
+      });
+
+    renderVideos();
+
+  });
+
+/* COLLAPSE SIDEBAR */
+
+document.getElementById("menuBtn")
+  .addEventListener("click", () => {
+
+    const sidebar = document.getElementById("sidebar");
+
+    if (window.innerWidth > 760) {
+
+      const collapsed = sidebar.dataset.collapsed === "true";
+
+      sidebar.dataset.collapsed = String(!collapsed);
+
+      sidebar.style.width = collapsed ? "" : "82px";
+
+      document.querySelector("main").style.marginLeft =
+        collapsed ? "" : "82px";
+
+      document.querySelector("main").style.width =
+        collapsed ? "" : "calc(100% - 82px)";
+
+      sidebar.querySelectorAll(".side-link span:not(.ico)")
+        .forEach(s => {
+          s.style.display = collapsed ? "" : "none";
+        });
+
+      sidebar.querySelectorAll(".side-heading, .side-separator")
+        .forEach(s => {
+          s.style.display = collapsed ? "" : "none";
+        });
+
+    }
+
+  });
+
+/* VOICE SEARCH */
+
+document.getElementById("voiceBtn")
+  .addEventListener("click", () => {
+
+    if (!("webkitSpeechRecognition" in window ||
+          "SpeechRecognition" in window)) {
+
+      alert(
+        "Voice search is not supported by this browser. Try typing instead."
+      );
+
+      return;
+
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+
+    recognition.onresult = e => {
+      searchInput.value = e.results[0][0].transcript;
+      renderVideos();
+    };
+
+    recognition.start();
+
+  });
+
+/* INITIALIZE */
+
+renderVideos();
+
+</script>
+
+</body>
+</html>
